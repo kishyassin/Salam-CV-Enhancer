@@ -1,7 +1,11 @@
 package router
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"kishyassin/Salam-CV-Enhancer/handler"
+
+	"github.com/gofiber/fiber/v2"
+)
 
 func SetupRoutes(app *fiber.App) {
-	// Set up the routes here
+	app.Post("/ocr", handler.OCR)
 }
