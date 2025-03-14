@@ -26,7 +26,7 @@ const UploadButton = () => {
             logo: "/amazonLogo.png",
             company: "Amazon",
             position: "Software Engineer"
-        }G
+        }
     ]
 
     const handleSelectCompany = (company: string, position: string) => {
@@ -173,12 +173,7 @@ const UploadButton = () => {
                                     </div>
                                 )}
                             </div>
-                            <Button
-                                className="w-full bg-[#1098F7] text-white hover:bg-[#1098F7]/90 flex items-center gap-2 justify-center"
-                            >
-                                <Sparkles className="h-4 w-4" />
-                                Generate CV
-                            </Button>
+                       
                         </div>
 
                         <div>
