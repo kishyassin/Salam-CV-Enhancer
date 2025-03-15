@@ -26,36 +26,92 @@ const UploadButton = () => {
         const endpoint = "https://api.groq.com/openai/v1/chat/completions"; // Groq API endpoint
     
         // Pre-structured CV data
+        // const cvData = {
+        //     name: "Omar Khabou",
+        //     profession: "Ingénieur Logiciel", // French title
+        //     skills: ["JavaScript", "React", "Node.js", "TypeScript", "Python", "SQL", "Cloud Computing"],
+        //     education: "Diplôme en Informatique",
+        //     experience: [
+        //         {
+        //             company: "XYZ Corp",
+        //             position: "Développeur Web",
+        //             duration: "3 ans",
+        //             description: "Développement d'applications web avec React et Node.js."
+        //         }
+        //     ],
+        //     contact: {
+        //         address: "1234 Rue Principale, Ville, Pays",
+        //         phone: "+123456789",
+        //         email: "omar.khabou@example.com"
+        //     },
+        //     companyInfo: {
+        //         name: "XYZ Corp",
+        //         address: "5678 Parc d'Affaires, Ville, Pays",
+        //         recruiter: "Jean Dupont"
+        //     },
+        //     jobTitle: "Développeur Web",
+        //     jobSource: "LinkedIn"
+        // };
+
+        // const cvData = {
+        //     "name": "عمر خابو",
+        //     "profession": "مهندس برمجيات",
+        //     "skills": ["جافا سكربت", "ريأكت", "نود.جي إس", "تايب سكربت", "بايثون", "إس كيو إل", "الحوسبة السحابية"],
+        //     "education": "دبلوم في علوم الكمبيوتر",
+        //     "experience": [
+        //         {
+        //             "company": "شركة XYZ",
+        //             "position": "مطور ويب",
+        //             "duration": "3 سنوات",
+        //             "description": "تطوير تطبيقات الويب باستخدام ريأكت ونود.جي إس."
+        //         }
+        //     ],
+        //     "contact": {
+        //         "address": "1234 شارع رئيسي، مدينة، بلد",
+        //         "phone": "+123456789",
+        //         "email": "omar.khabou@example.com"
+        //     },
+        //     "companyInfo": {
+        //         "name": "شركة XYZ",
+        //         "address": "5678 حديقة الأعمال، مدينة، بلد",
+        //         "recruiter": "جان دوبون"
+        //     },
+        //     "jobTitle": "مطور ويب",
+        //     "jobSource": "لينكدإن"
+        // };
+        
+
         const cvData = {
-            name: "Omar Khabou",
-            profession: "Ingénieur Logiciel", // French title
-            skills: ["JavaScript", "React", "Node.js", "TypeScript", "Python", "SQL", "Cloud Computing"],
-            education: "Diplôme en Informatique",
-            experience: [
+            "name": "Omar Khabou",
+            "profession": "Software Engineer",
+            "skills": ["JavaScript", "React", "Node.js", "TypeScript", "Python", "SQL", "Cloud Computing"],
+            "education": "Diploma in Computer Science",
+            "experience": [
                 {
-                    company: "XYZ Corp",
-                    position: "Développeur Web",
-                    duration: "3 ans",
-                    description: "Développement d'applications web avec React et Node.js."
+                    "company": "XYZ Corp",
+                    "position": "Web Developer",
+                    "duration": "3 years",
+                    "description": "Developing web applications using React and Node.js."
                 }
             ],
-            contact: {
-                address: "1234 Rue Principale, Ville, Pays",
-                phone: "+123456789",
-                email: "omar.khabou@example.com"
+            "contact": {
+                "address": "1234 Main Street, City, Country",
+                "phone": "+123456789",
+                "email": "omar.khabou@example.com"
             },
-            companyInfo: {
-                name: "XYZ Corp",
-                address: "5678 Parc d'Affaires, Ville, Pays",
-                recruiter: "Jean Dupont"
+            "companyInfo": {
+                "name": "XYZ Corp",
+                "address": "5678 Business Park, City, Country",
+                "recruiter": "Jean Dupont"
             },
-            jobTitle: "Développeur Web",
-            jobSource: "LinkedIn"
+            "jobTitle": "Web Developer",
+            "jobSource": "LinkedIn"
         };
+        
     
         // Detect CV language (English or French)
         const language = cvData.profession.match(/[\u0600-\u06FF]/) ? "ar" :
-                     cvData.profession.match(/[a-zA-Z]/) ? "fr" : "en";
+                        cvData.profession.match(/[a-zA-Z]/) ? "fr" : "en";
     
         // Generate the résumé in the same language
         const prompt = language === "fr" ? `
@@ -291,7 +347,7 @@ const UploadButton = () => {
                     />
                 </div>
             )}
-            <PdfGen text={contentPdf}/>
+            <PdfGen text={contentPdf !== undefined? contentPdf:''}/>
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetContent className="w-[400px] sm:w-[540px] flex flex-col">
                     <SheetHeader>
