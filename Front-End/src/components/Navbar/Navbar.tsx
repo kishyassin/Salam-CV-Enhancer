@@ -14,7 +14,7 @@ const Navbar = () => {
                 </Link>
                 <div className='flex gap-4'>
                     <Link href='/'>Home</Link>
-                    <Link href='/about' className='flex items-center gap-1'><DollarSign className='w-4 h-4 text-green-500' /> Pricing</Link>
+                    <Link href='/pricing' className='flex items-center gap-1'><DollarSign className='w-4 h-4 text-green-500' /> Pricing</Link>
                     <Link href='/contact' className='flex items-center gap-1'><User className='w-4 h-4 text-[#1098F7]' /> Account</Link>
                 </div>
             </div>

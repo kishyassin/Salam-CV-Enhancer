@@ -20,6 +20,7 @@ const UploadButton = () => {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null)
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [isProcessing, setIsProcessing] = useState(false)
     const [companyName, setCompanyName] = useState('')
     const [showSuggestions, setShowSuggestions] = useState(false)
     const [selectedLanguage, setSelectedLanguage] = useState<string>('')
@@ -69,9 +70,36 @@ const UploadButton = () => {
         }
     }
 
-    const handleProcess = () => {
-        setIsOpen(true)
-    }
+    const handleProcess = async () => {
+        if (!selectedFile || isProcessing) return;
+
+        setIsProcessing(true);
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('lang', selectedLanguage);
+
+        try {
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Upload failed');
+            }
+
+            const data = await response.json();
+            console.log('Upload successful:', data);
+
+            // Only open the sheet if the upload was successful
+            setIsOpen(true);
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            alert('Failed to upload file. Please try again.');
+        } finally {
+            setIsProcessing(false);
+        }
+    };
 
     // Close suggestions when clicking outside
     useEffect(() => {
@@ -138,10 +166,19 @@ const UploadButton = () => {
                             className="flex items-center gap-2 w-[250px] h-[60px] bg-[#1098F7] text-white hover:bg-[#1098F7]/90 rounded-lg"
                             size="lg"
                             onClick={handleProcess}
-                            disabled={selectedLanguage === ''}
+                            disabled={selectedLanguage === '' || isProcessing}
                         >
-                            <Sparkles className="h-6 w-6" />
-                            <p className="text-lg">Process</p>
+                            {isProcessing ? (
+                                <>
+                                    <Loader2 className="h-6 w-6 animate-spin" />
+                                    <p className="text-lg">Processing...</p>
+                                </>
+                            ) : (
+                                <>
+                                    <Sparkles className="h-6 w-6" />
+                                    <p className="text-lg">Process</p>
+                                </>
+                            )}
                         </Button>
                         {!selectedLanguage && (
                             <motion.p
