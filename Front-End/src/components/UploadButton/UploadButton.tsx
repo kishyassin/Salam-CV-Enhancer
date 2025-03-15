@@ -6,7 +6,10 @@ import { Input } from "@/components/ui/input"
 import { Upload, FileText, ArrowRight, Loader2, Sparkles, Search } from "lucide-react"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from 'next/link';
+// import { jsPDF } from "jspdf";
+import pdfGen from '../pdfGen'
+import PdfGen from '../pdfGen'
 
 const UploadButton = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -15,7 +18,177 @@ const UploadButton = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [companyName, setCompanyName] = useState('')
     const [showSuggestions, setShowSuggestions] = useState(false)
+    const [contentPdf, setContentPdf] = useState<string>();
 
+
+    async function generateResumee() {
+        const apiKey = "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"; // Replace with your Groq API key
+        const endpoint = "https://api.groq.com/openai/v1/chat/completions"; // Groq API endpoint
+    
+        // Pre-structured CV data
+        const cvData = {
+            name: "Omar Khabou",
+            profession: "Ingénieur Logiciel", // French title
+            skills: ["JavaScript", "React", "Node.js", "TypeScript", "Python", "SQL", "Cloud Computing"],
+            education: "Diplôme en Informatique",
+            experience: [
+                {
+                    company: "XYZ Corp",
+                    position: "Développeur Web",
+                    duration: "3 ans",
+                    description: "Développement d'applications web avec React et Node.js."
+                }
+            ],
+            contact: {
+                address: "1234 Rue Principale, Ville, Pays",
+                phone: "+123456789",
+                email: "omar.khabou@example.com"
+            },
+            companyInfo: {
+                name: "XYZ Corp",
+                address: "5678 Parc d'Affaires, Ville, Pays",
+                recruiter: "Jean Dupont"
+            },
+            jobTitle: "Développeur Web",
+            jobSource: "LinkedIn"
+        };
+    
+        // Detect CV language (English or French)
+        const language = cvData.profession.match(/[\u0600-\u06FF]/) ? "ar" :
+                     cvData.profession.match(/[a-zA-Z]/) ? "fr" : "en";
+    
+        // Generate the résumé in the same language
+        const prompt = language === "fr" ? `
+            Vous êtes un créateur de CV professionnel. Soyez simple et clair, n'utilisez pas toujours les mêmes mots, respectez simplement cette structure.
+            ne pas dire ce que vous avez modifie
+            Lettre de motivation pour le poste de ${cvData.jobTitle}
+    
+            Nom : ${cvData.name}
+            Adresse : ${cvData.contact.address}
+            Téléphone : ${cvData.contact.phone}
+            E-mail : ${cvData.contact.email}
+            Entreprise : ${companyName}
+            Adresse de l'entreprise : ${cvData.companyInfo.address}
+            Recruteur : ${cvData.companyInfo.recruiter}
+    
+            Objet :  ${cvData.jobTitle}
+    
+            Madame, Monsieur,
+    
+            Actuellement ${cvData.profession}, je suis vivement intéressé par le poste de ${cvData.jobTitle} au sein de votre entreprise ${companyName}, dont j’ai pris connaissance via ${cvData.jobSource}.
+    
+            Passionné par le développement web, j’ai acquis une expertise en ${cvData.skills.join(", ")} au fil de mes ${cvData.experience[0].duration} d’expérience chez ${cvData.experience[0].company}. J’y ai notamment ${cvData.experience[0].description}. 
+    
+            Ce qui m’attire particulièrement dans votre entreprise, c’est son engagement envers l’innovation et l’excellence technologique. Mon expérience et ma maîtrise des technologies modernes me permettent de m’intégrer rapidement et de contribuer efficacement à vos projets.
+    
+            Je suis convaincu que mon dynamisme, ma rigueur et mon expertise technique pourront être des atouts pour votre équipe. Disponible immédiatement, je serais ravi d’échanger avec vous lors d’un entretien.
+    
+            Dans l’attente de votre retour, veuillez agréer, ${companyName}, l’expression de mes salutations distinguées.
+    
+            ${cvData.name}
+        ` : language === "en" ? `
+            you are a profetional resume generator 
+            be simple and clear don't use everytime the same words just follow this structure
+            Cover Letter for the Position of ${cvData.jobTitle}
+
+            Name: ${cvData.name}
+            Address: ${cvData.contact.address}
+            Phone: ${cvData.contact.phone}
+            Email: ${cvData.contact.email}
+            Company: ${cvData.companyInfo.name}
+            Company Address: ${cvData.companyInfo.address}
+            Recruiter: ${cvData.companyInfo.recruiter}
+    
+            Subject: ${cvData.jobTitle}
+    
+            Dear Sir/Madam,
+    
+            As a ${cvData.profession}, I am highly interested in the ${cvData.jobTitle} position at your company, ${companyName}, which I discovered via ${cvData.jobSource}.
+    
+            Passionate about web development, I have gained expertise in ${cvData.skills.join(", ")} over my ${cvData.experience[0].duration} of experience at ${cvData.experience[0].company}. There, I ${cvData.experience[0].description}. 
+    
+            What attracts me most to your company is its commitment to innovation and technological excellence. My experience and expertise in modern technologies allow me to integrate quickly and contribute effectively to your projects.
+    
+            I am confident that my dynamism, rigor, and technical expertise will be valuable assets to your team. I am available immediately and would be delighted to discuss my application further in an interview.
+    
+            Looking forward to your response, please accept, ${companyName}, my best regards.
+    
+            ${cvData.name}
+        `: `
+            أنت مُنشئ سيرة ذاتية محترف. كن بسيطًا وواضحًا. لا تستخدم نفس الكلمات دائمًا. فقط اتبع هذا الهيكل.
+            خطاب التقديم لوظيفة ${cvData.jobTitle}
+
+        الاسم: ${cvData.name}
+        العنوان: ${cvData.contact.address}
+        الهاتف: ${cvData.contact.phone}
+        البريد الإلكتروني: ${cvData.contact.email}
+        الشركة: ${cvData.companyInfo.name}
+        عنوان الشركة: ${cvData.companyInfo.address}
+        مسؤول التوظيف: ${cvData.companyInfo.recruiter}
+
+        الموضوع: ${cvData.jobTitle}
+
+        السيد/السيدة المحترم،
+
+        أنا ${cvData.profession} وأرغب بشدة في التقدم لوظيفة ${cvData.jobTitle} في شركتكم الموقرة، ${cvData.companyInfo.name}، التي علمت عنها عبر ${cvData.jobSource}.
+
+        شغفي بتطوير الويب مكنني من اكتساب خبرة واسعة في ${cvData.skills.join(", ")} على مدى ${cvData.experience[0].duration} في شركة ${cvData.experience[0].company}. حيث قمت بـ ${cvData.experience[0].description}. 
+
+        ما يجذبني إلى شركتكم هو التزامها بالابتكار والتميز التكنولوجي. خبرتي ومعرفتي بأحدث التقنيات تتيح لي الاندماج بسرعة والمساهمة بفعالية في مشاريعكم.
+
+        أنا واثق بأنني سأكون إضافة قوية لفريقكم من خلال مهاراتي وديناميكيتي ودقتي في العمل. أنا متاح فورًا ويسعدني مناقشة طلبي خلال مقابلة.
+
+        بانتظار ردكم الكريم، وتفضلوا بقبول فائق الاحترام والتقدير، ${cvData.companyInfo.recruiter}.
+
+        ${cvData.name}
+        
+        `
+    
+        // Send request to Groq API
+        const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: "llama-3.3-70b-versatile",
+                messages: [
+                    {
+                        role: "user",
+                        content: prompt
+                    }
+                ]
+            })
+        });
+    
+        const data = await response.json();
+    
+        if (response.ok) {
+            console.log("Generated Résumé:", data.choices[0].message.content);
+            setContentPdf(data.choices[0].message.content);
+            // Create PDF using jsPDF
+            // const doc = new jsPDF();
+            // doc.setFont("helvetica", "normal");
+            // const content = data.choices[0].message.content;
+            // const lines = doc.splitTextToSize(content, 180);
+            // // Justify the text manually by adjusting spacing
+            // const margin = 10;
+            // let yPosition = 10;
+            // lines.forEach((line: string) => {
+            // doc.text(line, margin, yPosition);
+            // yPosition += 6; // Adjust line spacing
+            // });
+
+            // doc.save("resume.pdf");
+        } else {
+            console.error("Error generating résumé:", data.error.message);
+        }
+    }
+
+
+    
+    
     const suggestions = [
         {
             logo: "/netflixLogo.png",
@@ -76,12 +249,14 @@ const UploadButton = () => {
     }, [])
 
     return (
+
         <div className="flex flex-col gap-4 w-full mx-auto max-w-[1200px] items-center">
             <Button
                 variant="outline"
                 className="flex items-center gap-2 w-[250px] h-[60px] bg-[#1098F7] text-white hover:bg-[#1098F7]/90 relative rounded-lg"
                 size="lg"
             >
+                
                 <Input
                     type="file"
                     accept=".pdf"
@@ -116,7 +291,7 @@ const UploadButton = () => {
                     />
                 </div>
             )}
-
+            <PdfGen text={contentPdf}/>
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetContent className="w-[400px] sm:w-[540px] flex flex-col">
                     <SheetHeader>
@@ -224,8 +399,9 @@ const UploadButton = () => {
 
                     <div className="mt-6 pt-4 border-t">
                         <Button
-                            className="w-full bg-[#1098F7] text-white hover:bg-[#1098F7]/90"
+                            className="w-full bg-[#1098F7] text-white hover:bg-[#1098F7]/90 cursor-pointer"
                             size="lg"
+                            onClick={generateResumee}
                         >
                             Generate A Cover Letter
                         </Button>
