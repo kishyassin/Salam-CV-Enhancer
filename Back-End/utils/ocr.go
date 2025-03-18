@@ -1,11 +1,11 @@
 package utils
 
+
 import (
 	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
-
 	vision "cloud.google.com/go/vision/apiv1"
 	"google.golang.org/api/option"
 )

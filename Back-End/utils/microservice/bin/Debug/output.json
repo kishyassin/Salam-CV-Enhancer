@@ -1,0 +1,47 @@
+﻿[
+    {
+        "current_text": "SOUAD\nNACHIT\nSERICE HYGIÈNE\nRes, Bayt Almoustaqbal 2\nGH 05 30, C30 Sale,\nMorocco\n0695416174\nwinesada01@gmail.com",
+        "enhanced_text": {
+            "الاسم": "سعاد ناشط",
+            "الوظيفة": "خدمة النظافة",
+            "العنوان": "مسكن، بيت المستقبل 2، GH 05 30، C30 صالé، المغرب",
+            "رقم الهاتف": "0695416174",
+            "البريد الإلكتروني": "winesada01@gmail.com"
+        }
+    },
+    {
+        "current_text": "ÉDUCATION\nGESTION DE QUALITÉ,\nHYGIENE ET\nSALUBRITÉ EN\nSECTEUR THR\nINSTITUT SPÉCIALISÉ\nSE TECHNOLOGIE\nAPPLIQUÉ HÔTELIÈRE\nET TOURISTIQUE\nTANGER\n2025",
+        "enhanced_text": {
+            "التعليم": "إدارة الجودة، والنظافة والصحة في قطاع THR",
+            "المعهد": "معهد متخصص في تكنولوجيا الفنادق والسياحة المطبقة",
+            "المدينة": "طنجة",
+            "السنة": "2025"
+        }
+    },
+    {
+        "current_text": "PROFIL\nAméliorer mes compétences professionnelles, mes capacités et mes\nconnaissances dans une organisation qui reconnait la valeur du travail\nschame et qui me confie des responsabilités et des défis.",
+        "enhanced_text": {
+            "الملف الشخصي": "تحسين مهاراتي المهنية، وقدراتي ومعرفتي في منظمة تعترف بقيمة العمل، والتي تعتمد علي في المسؤوليات والتحديات."
+        }
+    },
+    {
+        "current_text": "2ÈME BACCALAUREAT\nSCIENCES ÉCONOMIE\nCOLLÈGE IMAM MALAK\nKHEMISSET\n2023",
+        "enhanced_text": {
+            "التعليم": "البكالوريا الثانية، علوم الاقتصاد",
+            "المؤسسة الأكاديمية": "كلية الإمام مالك",
+            "المدينة": "الخميسات",
+            "السنة": "2023"
+        }
+    },
+    {
+        "current_text": "EXPÉRIENCES PROFESSIONNELLES\nSERICE HYGIENE | MAI 2024 - JUIL, 2024\nHOTEL LE DIWAN RABAT\n Allemand, Flexible, L'esprit d'équipe, Ponctualité",
+        "enhanced_text": {
+            "التجارب المهنية": {
+                "الوظيفة": "خدمة النظافة",
+                "المدة": "مايو 2024 - يوليوز، 2024",
+                "الشركة": "فندق الديوان الرباط",
+                "المهارات الرئيسية": "الألمانية، المرونة، وروح الفريق، الالتزام بالمواعيد"
+            }
+        }
+    }
+]
