@@ -1,13 +1,12 @@
 package utils
+
 import (
 	"encoding/json"
 	"os/exec"
 )
 
-
-
 func GetEnhancements(text string, language string) (string, error) {
-	cmd := exec.Command("enhancements.exe", text, language)
+	cmd := exec.Command("./utils/microservice/EnhancementOCR.exe", text, language)
 	output, err := cmd.Output()
 	if err != nil {
 		return "", err
@@ -26,4 +25,3 @@ func GetEnhancements(text string, language string) (string, error) {
 
 	return string(jsonResult), nil
 }
-

@@ -44,3 +44,29 @@ func UploadFile(c *fiber.Ctx) error {
 		"text": text,
 	})
 }
+
+
+
+//GetEnhancements is a function that returns the enhancements of the text in a language
+func GetEnhancements(c *fiber.Ctx) error {
+	text := c.FormValue("text")
+	language := c.FormValue("language")
+
+	if text == "" || language == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Text and language are required",
+		})
+	}
+
+	enhancements, err := utils.GetEnhancements(text, language)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error":   "Unable to get enhancements",
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"enhancements": enhancements,
+	})
+}
