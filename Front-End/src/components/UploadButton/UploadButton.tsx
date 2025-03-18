@@ -3,13 +3,14 @@
 import React, { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Upload, FileText, ArrowRight, Loader2, Sparkles, Search } from "lucide-react"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Upload, FileText, ArrowRight, Loader2, Search } from "lucide-react"
+import { Sheet, SheetContent, SheetHeader, SheetTitle} from "@/components/ui/sheet"
 import Image from 'next/image'
 import Link from 'next/link';
+import { PDFDocument, rgb } from 'pdf-lib';
 // import { jsPDF } from "jspdf";
-import pdfGen from '../pdfGen'
-import PdfGen from '../pdfGen'
+// import PDFDocument from 'pdfkit';
+
 
 const UploadButton = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -18,7 +19,7 @@ const UploadButton = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [companyName, setCompanyName] = useState('')
     const [showSuggestions, setShowSuggestions] = useState(false)
-    const [contentPdf, setContentPdf] = useState<string>();
+    // const [contentPdf, setContentPdf] = useState<string>();
 
 
     async function generateResumee() {
@@ -222,7 +223,7 @@ const UploadButton = () => {
     
         if (response.ok) {
             console.log("Generated Résumé:", data.choices[0].message.content);
-            setContentPdf(data.choices[0].message.content);
+            // setContentPdf(data.choices[0].message.content);
             // Create PDF using jsPDF
             // const doc = new jsPDF();
             // doc.setFont("helvetica", "normal");
@@ -237,13 +238,47 @@ const UploadButton = () => {
             // });
 
             // doc.save("resume.pdf");
+
+
+            // Test 
+            const pdfDoc = await PDFDocument.create();
+            const page = pdfDoc.addPage([595, 842]); // A4 size (width, height)
+            // const font = await pdfDoc.embedFont(PDFDocument.Font.Helvetica);
+            const fontSize = 12;
+            const margin = 50;
+
+            // Get content from the API response
+            const content = data.choices[0].message.content;
+            // Add text to the page
+            let yPosition = 850; // Start from top of the page
+           
+                page.drawText(content, {
+                    x: margin,
+                    y: yPosition,
+                    size: fontSize,
+                    color: rgb(0, 0, 0),
+                    maxWidth: 500 // Max width for the text, to prevent it from going off the page
+                });
+                yPosition -= fontSize + 2; // Move the text down for the next line
+
+            // Save the PDF to a byte array
+            const pdfBytes = await pdfDoc.save();
+
+            // Create a Blob from the generated PDF bytes and create a URL to download
+            const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+
+            // Download the PDF
+            const link = document.createElement('a');
+            link.href = pdfUrl;
+            link.download = 'resume.pdf';
+            link.click();
+
         } else {
             console.error("Error generating résumé:", data.error.message);
         }
     }
 
-
-    
     
     const suggestions = [
         {
@@ -347,7 +382,7 @@ const UploadButton = () => {
                     />
                 </div>
             )}
-            <PdfGen text={contentPdf !== undefined? contentPdf:''}/>
+            
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetContent className="w-[400px] sm:w-[540px] flex flex-col">
                     <SheetHeader>
