@@ -79,17 +79,17 @@ const UploadButton = () => {
         formData.append('lang', selectedLanguage);
 
         try {
-            const response = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData,
-            });
+            // const response = await fetch('/api/upload', {
+            //     method: 'POST',
+            //     body: formData,
+            // });
 
-            if (!response.ok) {
-                throw new Error('Upload failed');
-            }
+            // if (!response.ok) {
+            //     throw new Error('Upload failed');
+            // }
 
-            const data = await response.json();
-            console.log('Upload successful:', data);
+            // const data = await response.json();
+            // console.log('Upload successful:', data);
 
             // Only open the sheet if the upload was successful
             setIsOpen(true);
