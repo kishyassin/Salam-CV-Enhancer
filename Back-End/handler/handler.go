@@ -7,7 +7,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func OCR(c *fiber.Ctx) error {
+func UploadFile(c *fiber.Ctx) error {
+	language := c.FormValue("language")
 	file, err := c.FormFile("file")
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -30,7 +31,7 @@ func OCR(c *fiber.Ctx) error {
 		})
 	}
 
-	// Extract text with Google Vision API
+	// Extract text from the file
 	text, err := utils.ExtractTextFromFile(filePath)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -39,8 +40,17 @@ func OCR(c *fiber.Ctx) error {
 		})
 	}
 
-	// Return the extracted text
+	// Get enhancements of the text
+	enhancements, err := utils.EnhanceTextWithGroq(text, language)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error":   "Unable to get enhancements",
+			"message": err.Error(),
+		})
+	}
+
+	// Return the enhancements array
 	return c.JSON(fiber.Map{
-		"text": text,
+		"enhancements": enhancements,
 	})
 }

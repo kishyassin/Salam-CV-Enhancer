@@ -1,5 +1,4 @@
 # Ignore environment files
 .env
 
-# Ignore Google Cloud credentials
-*.json
+
