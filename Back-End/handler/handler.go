@@ -9,6 +9,9 @@ import (
 
 func UploadFile(c *fiber.Ctx) error {
 	language := c.FormValue("language")
+	if language == "" {
+		language = "en"
+	}
 	file, err := c.FormFile("file")
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -52,5 +55,7 @@ func UploadFile(c *fiber.Ctx) error {
 	// Return the enhancements array
 	return c.JSON(fiber.Map{
 		"enhancements": enhancements,
+		"text":		 text,
+		"language":	 language,
 	})
 }
