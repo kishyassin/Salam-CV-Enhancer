@@ -23,10 +23,10 @@ export async function POST(request: Request) {
             body: backendFormData,
         });
 
-        // if (!backendResponse.ok) {
-        //     console.error('Backend upload failed:', backendResponse.statusText);
-        //     throw new Error('Backend upload failed');
-        // }
+        if (!backendResponse.ok) {
+            console.error('Backend upload failed:', backendResponse.statusText);
+            throw new Error('Backend upload failed');
+        }
 
         const data = await backendResponse.json();
 
