@@ -29,126 +29,106 @@ const UploadButton = () => {
     const [showSuggestions, setShowSuggestions] = useState(false)
     const [selectedLanguage, setSelectedLanguage] = useState<string>('')
     // const [contentPdf, setContentPdf] = useState<string>();
+    const [enhancements, setEnhancements] = useState<any[]>([])
+    const [data, setData] = useState<string>('');
+    const [dataText, setDataText] = useState<string>('');
+    const [language, setLanguage] = useState<string>('fr');
 
+
+    const handleProcess = async () => {
+        if (!selectedFile || isProcessing) return;
+
+        setIsProcessing(true);
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('lang', selectedLanguage);
+
+        try {
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Upload failed');
+            }
+
+            const resp = await response.json();
+            // console.log('Upload successful:', resp);
+            setDataText(resp.text);
+            setLanguage(resp.language);
+            setEnhancements(resp.enhancements || []);
+            setIsOpen(true);
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            alert('Failed to upload file. Please try again.');
+        } finally {
+            setIsProcessing(false);
+        }
+    };
 
     async function generateResumee() {
         const apiKey = "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";
         const endpoint = "https://api.groq.com/openai/v1/chat/completions";
+        // const textCv = await fetchPdfContent();
+        // console.log("language", language);
+        const imageUrl = "/Logo22.png";
+        const prompt = language === "Fr" ? `
+    // Vous êtes un expert en rédaction de lettres de motivation. 
+    // Reformulez le texte fourni (${dataText}) en respectant la structure demandée, 
+    // mais en évitant d'utiliser exactement les mêmes mots dans cette structure. 
+    // Soyez simple et clair.
+    // ne pas faire de commentaires
 
-        const cvData = {
-            "name": "Omar Khabou",
-            "profession": "Software Engineer",
-            "skills": ["JavaScript", "React", "Node.js", "TypeScript", "Python", "SQL", "Cloud Computing"],
-            "education": "Diploma in Computer Science",
-            "experience": [
-                {
-                    "company": "XYZ Corp",
-                    "position": "Web Developer",
-                    "duration": "3 years",
-                    "description": "Developing web applications using React and Node.js."
-                }
-            ],
-            "contact": {
-                "address": "1234 Main Street, City, Country",
-                "phone": "+123456789",
-                "email": "omar.khabou@example.com"
-            },
-            "companyInfo": {
-                "name": "XYZ Corp",
-                "address": "5678 Business Park, City, Country",
-                "recruiter": "Jean Dupont"
-            },
-            "jobTitle": "Web Developer",
-            "jobSource": "LinkedIn"
-        };
+    Nom : 
+    Adresse : 
+    Téléphone : 
+    E-mail : 
+    Entreprise : ${companyName}
+    Adresse de l'entreprise : 
+    Recruteur : 
 
-        const language = selectedLanguage.toLowerCase() === 'fr' ? 'fr' :
-            selectedLanguage.toLowerCase() === 'ar' ? 'ar' : 'en';
+    Objet :  
 
-        const prompt = language === "fr" ? `
-            Vous êtes un créateur de CV professionnel. Soyez simple et clair, n'utilisez pas toujours les mêmes mots, respectez simplement cette structure.
-            ne pas dire ce que vous avez modifie
-            Lettre de motivation pour le poste de ${cvData.jobTitle}
-    
-            Nom : ${cvData.name}
-            Adresse : ${cvData.contact.address}
-            Téléphone : ${cvData.contact.phone}
-            E-mail : ${cvData.contact.email}
-            Entreprise : ${companyName}
-            Adresse de l'entreprise : ${cvData.companyInfo.address}
-            Recruteur : ${cvData.companyInfo.recruiter}
-    
-            Objet :  ${cvData.jobTitle}
-    
-            Madame, Monsieur,
-    
-            Actuellement ${cvData.profession}, je suis vivement intéressé par le poste de ${cvData.jobTitle} au sein de votre entreprise ${companyName}, dont j'ai pris connaissance via ${cvData.jobSource}.
-    
-            Passionné par le développement web, j'ai acquis une expertise en ${cvData.skills.join(", ")} au fil de mes ${cvData.experience[0].duration} d'expérience chez ${cvData.experience[0].company}. J'y ai notamment ${cvData.experience[0].description}. 
-    
-            Ce qui m'attire particulièrement dans votre entreprise, c'est son engagement envers l'innovation et l'excellence technologique. Mon expérience et ma maîtrise des technologies modernes me permettent de m'intégrer rapidement et de contribuer efficacement à vos projets.
-    
-            Je suis convaincu que mon dynamisme, ma rigueur et mon expertise technique pourront être des atouts pour votre équipe. Disponible immédiatement, je serais ravi d'échanger avec vous lors d'un entretien.
-    
-            Dans l'attente de votre retour, veuillez agréer, ${companyName}, l'expression de mes salutations distinguées.
-    
-            ${cvData.name}
-        ` : language === "en" ? `
-            you are a profetional resume generator 
-            be simple and clear don't use everytime the same words just follow this structure
-            Cover Letter for the Position of ${cvData.jobTitle}
+    Madame, Monsieur,
 
-            Name: ${cvData.name}
-            Address: ${cvData.contact.address}
-            Phone: ${cvData.contact.phone}
-            Email: ${cvData.contact.email}
-            Company: ${cvData.companyInfo.name}
-            Company Address: ${cvData.companyInfo.address}
-            Recruiter: ${cvData.companyInfo.recruiter}
-    
-            Subject: ${cvData.jobTitle}
-    
-            Dear Sir/Madam,
-    
-            As a ${cvData.profession}, I am highly interested in the ${cvData.jobTitle} position at your company, ${companyName}, which I discovered via ${cvData.jobSource}.
-    
-            Passionate about web development, I have gained expertise in ${cvData.skills.join(", ")} over my ${cvData.experience[0].duration} of experience at ${cvData.experience[0].company}. There, I ${cvData.experience[0].description}. 
-    
-            What attracts me most to your company is its commitment to innovation and technological excellence. My experience and expertise in modern technologies allow me to integrate quickly and contribute effectively to your projects.
-    
-            I am confident that my dynamism, rigor, and technical expertise will be valuable assets to your team. I am available immediately and would be delighted to discuss my application further in an interview.
-    
-            Looking forward to your response, please accept, ${companyName}, my best regards.
-    
-            ${cvData.name}
-        `: `
-            أنت مُنشئ سيرة ذاتية محترف. كن بسيطًا وواضحًا. لا تستخدم نفس الكلمات دائمًا. فقط اتبع هذا الهيكل.
-            خطاب التقديم لوظيفة ${cvData.jobTitle}
+    Actuellement à la recherche d'une opportunité enrichissante, je suis vivement intéressé par le poste de au sein de votre entreprise ${companyName}, dont j'ai pris connaissance via .
 
-            الاسم: ${cvData.name}
-            العنوان: ${cvData.contact.address}
-            الهاتف: ${cvData.contact.phone}
-            البريد الإلكتروني: ${cvData.contact.email}
-            الشركة: ${cvData.companyInfo.name}
-            عنوان الشركة: ${cvData.companyInfo.address}
-            مسؤول التوظيف: ${cvData.companyInfo.recruiter}
+    Passionné par le développement web, j'ai acquis une expertise en au fil de mes d'expérience chez . J'y ai notamment . 
 
-            الموضوع: ${cvData.jobTitle}
+    Ce qui m'attire particulièrement dans votre entreprise, c'est son engagement envers l'innovation et l'excellence technologique. Mon expérience et ma maîtrise des technologies modernes me permettent de m'intégrer rapidement et de contribuer efficacement à vos projets.
 
-            السيد/السيدة المحترم،
+    Je suis convaincu que mon dynamisme, ma rigueur et mon expertise technique pourront être des atouts pour votre équipe. Disponible immédiatement, je serais ravi d'échanger avec vous lors d'un entretien.
 
-            أنا ${cvData.profession} وأرغب بشدة في التقدم لوظيفة ${cvData.jobTitle} في شركتكم الموقرة، ${cvData.companyInfo.name}، التي علمت عنها عبر ${cvData.jobSource}.
+    Dans l'attente de votre retour, veuillez agréer, ${companyName}, l'expression de mes salutations distinguées.`
+            : `
+    You are an expert in writing cover letters.
+    Rephrase the provided text (${dataText}) while maintaining the required structure,
+    but avoiding the use of the exact same words in this structure.
+    Be simple and clear.
 
-            شغفي بتطوير الويب مكنني من اكتساب خبرة واسعة في ${cvData.skills.join(", ")} على مدى ${cvData.experience[0].duration} في شركة ${cvData.experience[0].company}. حيث قمت بـ ${cvData.experience[0].description}. 
+    Name:  
+    Address:  
+    Phone:  
+    Email:  
+    Company: ${companyName}  
+    Company Address:  
+    Recruiter:  
 
-            ما يجذبني إلى شركتكم هو التزامها بالابتكار والتميز التكنولوجي. خبرتي ومعرفتي بأحدث التقنيات تتيح لي الاندماج بسرعة والمساهمة بفعالية في مشاريعكم.
+    Subject:  
 
-            أنا واثق بأنني سأكون إضافة قوية لفريقكم من خلال مهاراتي وديناميكيتي ودقتي في العمل. أنا متاح فورًا ويسعدني مناقشة طلبي خلال مقابلة.
+    Dear Sir/Madam,
 
-            بانتظار ردكم الكريم، وتفضلوا بقبول فائق الاحترام والتقدير، ${cvData.companyInfo.recruiter}.
+    Currently , I am highly interested in the position at your company ${companyName}, which I learned about through .
 
-            ${cvData.name}
-        `;
+    Passionate about web development, I have gained expertise in over my years of experience at . During that time, I have .  
+
+    What particularly attracts me to your company is its commitment to innovation and technological excellence. My experience and mastery of modern technologies allow me to integrate quickly and contribute effectively to your projects.
+
+    I am confident that my dynamism, precision, and technical expertise will be valuable assets to your team. Available immediately, I would be delighted to discuss further in an interview.
+
+    Looking forward to your response, please accept, ${companyName}, my best regards.`;
+
 
         const response = await fetch(endpoint, {
             method: "POST",
@@ -170,15 +150,30 @@ const UploadButton = () => {
         const data = await response.json();
 
         if (response.ok) {
-            console.log("Generated Résumé:", data.choices[0].message.content);
+            // console.log("Generated Résumé:", data.choices[0].message.content);
 
             const pdfDoc = await PDFDocument.create();
             const page = pdfDoc.addPage([595, 842]); // A4 size
             const fontSize = 12;
-            const margin = 50;
+            const margin = 40;
+            const imageBytes = await fetch(imageUrl).then(res => res.arrayBuffer());
+            const image = await pdfDoc.embedPng(imageBytes);
+
+            // Set fixed dimensions for the logo
+            const logoWidth = 150;
+            const logoHeight = 50;
+
+            // Position the logo at the top
+            page.drawImage(image, {
+                x: 400,
+                y: 780,
+                width: logoWidth,
+                height: logoHeight
+            });
+
 
             const content = data.choices[0].message.content;
-            let yPosition = 850;
+            let yPosition = 750;
 
             page.drawText(content, {
                 x: margin,
@@ -201,19 +196,6 @@ const UploadButton = () => {
         }
     }
 
-
-    const suggestions = [
-        {
-            logo: "/netflixLogo.png",
-            company: "Netflix",
-            position: "Software Engineer"
-        },
-        {
-            logo: "/amazonLogo.png",
-            company: "Amazon",
-            position: "Software Engineer"
-        }
-    ]
 
     const handleSelectCompany = (company: string, position: string) => {
         setCompanyName(`${company} - ${position}`)
@@ -244,35 +226,7 @@ const UploadButton = () => {
         }
     }
 
-    const handleProcess = async () => {
-        if (!selectedFile || isProcessing) return;
 
-        setIsProcessing(true);
-        const formData = new FormData();
-        formData.append('file', selectedFile);
-        formData.append('lang', selectedLanguage);
-
-        try {
-            const response = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (!response.ok) {
-                throw new Error('Upload failed');
-            }
-
-            const data = await response.json();
-            console.log('Upload successful:', data);
-
-            setIsOpen(true);
-        } catch (error) {
-            console.error('Error uploading file:', error);
-            alert('Failed to upload file. Please try again.');
-        } finally {
-            setIsProcessing(false);
-        }
-    };
 
     // Close suggestions when clicking outside
     useEffect(() => {
@@ -329,7 +283,6 @@ const UploadButton = () => {
                             <SelectContent>
                                 <SelectItem value="En">English</SelectItem>
                                 <SelectItem value="Fr">French</SelectItem>
-                                <SelectItem value="Ar">Arabic</SelectItem>
                             </SelectContent>
                         </Select>
 
@@ -401,41 +354,10 @@ const UploadButton = () => {
                                             value={companyName}
                                             onChange={(e) => {
                                                 setCompanyName(e.target.value)
-                                                setShowSuggestions(true)
                                             }}
-                                            onFocus={() => setShowSuggestions(true)}
                                             className="pl-10 mb-3"
                                         />
                                     </div>
-
-                                    {showSuggestions && (
-                                        <div className="absolute w-full bg-white rounded-md border border-gray-200 shadow-lg mt-1 max-h-60 overflow-auto z-50">
-                                            {suggestions
-                                                .filter(s =>
-                                                    s.company.toLowerCase().includes(companyName.toLowerCase()) ||
-                                                    s.position.toLowerCase().includes(companyName.toLowerCase())
-                                                )
-                                                .map((suggestion, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer"
-                                                        onClick={() => handleSelectCompany(suggestion.company, suggestion.position)}
-                                                    >
-                                                        <Image
-                                                            src={suggestion.logo}
-                                                            alt={`${suggestion.company} logo`}
-                                                            width={40}
-                                                            height={40}
-                                                            className="rounded-full"
-                                                        />
-                                                        <div>
-                                                            <p className="font-medium">{suggestion.company}</p>
-                                                            <p className="text-sm text-gray-500">{suggestion.position}</p>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                        </div>
-                                    )}
                                 </div>
 
                             </div>
@@ -452,36 +374,23 @@ const UploadButton = () => {
                             <div className="mt-6">
                                 <h3 className="font-semibold mb-4">Suggested Changes</h3>
                                 <div className="flex flex-col gap-4">
-                                    <div className="flex items-center justify-between p-4 border rounded-lg">
-                                        <div className="flex items-center gap-3">
-
-                                            <div>
-                                                <p className="text-sm">Improve Experiences Description</p>
+                                    {enhancements.map((enhancement, index) => (
+                                        <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                                            <div className="flex items-center gap-3">
+                                                <div>
+                                                    <p className="text-sm font-medium">{enhancement.section}</p>
+                                                    <p className="text-sm text-gray-600">{enhancement.description}</p>
+                                                </div>
                                             </div>
+                                            <Link
+                                                href="#"
+                                                className="flex items-center gap-1 text-[#1098F7] hover:underline"
+                                            >
+                                                Apply
+                                                <ArrowRight className="h-4 w-4" />
+                                            </Link>
                                         </div>
-                                        <Link
-                                            href="#"
-                                            className="flex items-center gap-1 text-[#1098F7] hover:underline"
-                                        >
-                                            Apply
-                                            <ArrowRight className="h-4 w-4" />
-                                        </Link>
-                                    </div>
-                                    <div className="flex items-center justify-between p-4 border rounded-lg">
-                                        <div className="flex items-center gap-3">
-
-                                            <div>
-                                                <p className="text-sm">Enhance Description</p>
-                                            </div>
-                                        </div>
-                                        <Link
-                                            href="#"
-                                            className="flex items-center gap-1 text-[#1098F7] hover:underline"
-                                        >
-                                            Apply
-                                            <ArrowRight className="h-4 w-4" />
-                                        </Link>
-                                    </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
@@ -498,7 +407,8 @@ const UploadButton = () => {
                     </SheetContent>
                 </Sheet>
             </div>
-            )
+        </>
+    )
 }
 
-            export default UploadButton
+export default UploadButton

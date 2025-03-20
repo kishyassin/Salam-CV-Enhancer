@@ -17,7 +17,7 @@ func main() {
 	// Start the server
 	port := os.Getenv("APP_PORT") // Railway assigns this dynamically
 	if port == "" {
-		port = "3000" // Default fallback
+		port = "3001" // Default fallback
 	}
 
 	if err := app.Listen(":" + port); err != nil {
