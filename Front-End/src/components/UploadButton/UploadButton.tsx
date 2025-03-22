@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Upload, FileText, ArrowRight, Loader2, Sparkles, Search } from "lucide-react"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
-import Image from 'next/image'
 import Link from 'next/link';
 import { PDFDocument, rgb } from 'pdf-lib';
 // import { jsPDF } from "jspdf";
@@ -26,11 +25,9 @@ const UploadButton = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
     const [companyName, setCompanyName] = useState('')
-    const [showSuggestions, setShowSuggestions] = useState(false)
     const [selectedLanguage, setSelectedLanguage] = useState<string>('')
     // const [contentPdf, setContentPdf] = useState<string>();
-    const [enhancements, setEnhancements] = useState<any[]>([])
-    const [data, setData] = useState<string>('');
+    const [enhancements, setEnhancements] = useState<unknown[]>([])
     const [dataText, setDataText] = useState<string>('');
     const [language, setLanguage] = useState<string>('fr');
 
@@ -173,7 +170,7 @@ const UploadButton = () => {
 
 
             const content = data.choices[0].message.content;
-            let yPosition = 750;
+            const yPosition = 750;
 
             page.drawText(content, {
                 x: margin,
@@ -197,8 +194,11 @@ const UploadButton = () => {
     }
 
 
-    const handleSelectCompany = (company: string, position: string) => {
-        setCompanyName(`${company} - ${position}`)
+    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]
+        if (!file) return
+
+        if (file.type !== 'application/pdf') {
         setShowSuggestions(false)
     }
 
