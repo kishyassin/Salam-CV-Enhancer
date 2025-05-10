@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Upload, FileText, ArrowRight, Loader2, Sparkles, Search } from "lucide-react"
@@ -185,20 +185,6 @@ const UploadButton = () => {
             if (url) URL.revokeObjectURL(url)
         }
     }
-
-    // Close suggestions when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
-            const target = e.target as HTMLElement
-            if (!target.closest('#company-search-container')) {
-                // You can remove this function if not needed, or keep it for future use
-            }
-        }
-
-        // Optionally remove these event listeners if not needed
-        // document.addEventListener('click', handleClickOutside)
-        // return () => document.removeEventListener('click', handleClickOutside)
-    }, [])
 
     return (
         <>
